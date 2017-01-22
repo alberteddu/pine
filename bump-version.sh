@@ -24,7 +24,7 @@ git checkout gh-pages
 cp pine.phar downloads/pine-${TAG}.phar
 git add downloads/pine-${TAG}.phar
 
-SHA1=$(openssl sha1 pine.phar)
+SHA1=$(openssl sha1 pine.phar | sed 's/^.* //')
 
 JSON='name:"pine.phar"'
 JSON="${JSON},sha1:\"${SHA1}\""
