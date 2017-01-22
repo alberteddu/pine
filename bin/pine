@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+use Pine\PineApplication;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$application = new PineApplication('Pine', '@package_version@');
+$application->run();

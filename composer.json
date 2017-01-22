@@ -6,6 +6,8 @@
         }
     },
     "require": {
-        "branches/branches": "dev-master"
+        "branches/branches": "dev-master",
+        "symfony/console": "^3.2",
+        "herrera-io/phar-update": "1.*"
     }
 }
