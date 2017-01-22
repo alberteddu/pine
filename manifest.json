@@ -1,2 +1,8 @@
 [
+    {
+        "name": "pine.phar",
+        "sha1": "17ad5a3e05462893548011c49349bc2c557dc495",
+        "url": "http://alberteddu.github.io/pine/downloads/pine-0.0.2.phar",
+        "version": "0.0.2"
+    }
 ]
