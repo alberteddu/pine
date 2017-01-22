@@ -1,5 +1,5 @@
 {
-    "name": "pine/pine",
+    "name": "alberteddu/pine",
     "autoload": {
         "psr-4": {
             "Pine\\": "src/"
