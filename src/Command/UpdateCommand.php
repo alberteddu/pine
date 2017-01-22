@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateCommand extends Command
 {
-    const MANIFEST_FILE = 'http://';
+    const MANIFEST_FILE = 'https://alberteddu.github.io/pine/manifest.json';
 
     protected function configure()
     {
