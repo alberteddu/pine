@@ -1,0 +1,11 @@
+{
+    "name": "pine/pine",
+    "autoload": {
+        "psr-4": {
+            "Pine\\": "src/"
+        }
+    },
+    "require": {
+        "branches/branches": "dev-master"
+    }
+}
