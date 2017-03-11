@@ -2,8 +2,10 @@
 
 namespace Pine;
 
+use Pine\Command\BuildCommand;
 use Pine\Command\CreateCommand;
 use Pine\Command\UpdateCommand;
+use Pine\Command\WatchCommand;
 use Symfony\Component\Console\Application;
 
 class PineApplication extends Application
@@ -18,7 +20,8 @@ class PineApplication extends Application
     {
         parent::__construct($name, $version);
 
-        $this->add(new CreateCommand());
         $this->add(new UpdateCommand());
+        $this->add(new BuildCommand());
+        $this->add(new WatchCommand());
     }
 }

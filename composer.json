@@ -3,11 +3,19 @@
     "autoload": {
         "psr-4": {
             "Pine\\": "src/"
-        }
+        },
+        "files": [
+            "lib/annotations.php",
+            "lib/joinPaths.php",
+            "lib/xcopy.php"
+        ]
     },
     "require": {
         "branches/branches": "dev-master",
         "symfony/console": "^3.2",
-        "herrera-io/phar-update": "1.*"
+        "herrera-io/phar-update": "1.*",
+        "jms/serializer": "^1.4",
+        "twig/twig": "~2.0",
+        "jasonlewis/resource-watcher": "1.2.*"
     }
 }
