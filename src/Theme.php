@@ -80,8 +80,21 @@ class Theme
         return $this->config;
     }
 
+    /**
+     * Clear theme class cache by increasing an int value.
+     */
     public function clearTwigClassCache()
     {
         $this->twig->increaseEntropy();
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    public function getStaticFilePath($path)
+    {
+        return joinPaths($this->directory, self::PUBLIC_DIRECTORY, $path);
     }
 }

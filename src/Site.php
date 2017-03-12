@@ -84,14 +84,20 @@ class Site
         xcopy($publicSource, $publicDestination);
     }
 
-    private function buildPost(PostInterface $post)
+    public function renderPost(PostInterface $post)
     {
         $layout = $post->getProperty('layout', 'default');
-        $result = $this->theme->renderTemplate($layout, [
+
+        return $this->theme->renderTemplate($layout, [
             'site' => $this,
             'theme' => $this->theme,
             'post' => $post,
         ]);
+    }
+
+    private function buildPost(PostInterface $post)
+    {
+        $renderedPost = $this->renderPost($post);
 
         $directory = $this->getPathInBuild($post->getUrl());
         $path = $this->getPathInBuild($post->getUrl(), 'index.html');
@@ -100,7 +106,7 @@ class Site
             mkdir($directory);
         }
 
-        file_put_contents($path, $result);
+        file_put_contents($path, $renderedPost);
 
         foreach ($post->getAttachments() as $file) {
             if ($file->getUrl()->getLastSegment() === $post->getProperty('__content_filename')) {
@@ -225,5 +231,13 @@ class Site
         array_unshift($args, $this->path);
 
         return call_user_func_array('joinPaths', $args);
+    }
+
+    /**
+     * @return Branches
+     */
+    public function getBranches()
+    {
+        return $this->branches;
     }
 }
