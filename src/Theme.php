@@ -57,8 +57,13 @@ class Theme
 
             return sprintf('/theme/%s', $url);
         }));
+        $this->loadConfig();
+    }
+
+    private function loadConfig()
+    {
         $this->config = new Configuration();
-        $this->config->processDirectory(joinPaths($this->directory, self::CONFIG_DIRECTORY), $env);
+        $this->config->processDirectory(joinPaths($this->directory, self::CONFIG_DIRECTORY), $this->env);
     }
 
     /**
@@ -83,8 +88,9 @@ class Theme
     /**
      * Clear theme class cache by increasing an int value.
      */
-    public function clearTwigClassCache()
+    public function reloadTheme()
     {
+        $this->loadConfig();
         $this->twig->increaseEntropy();
     }
 

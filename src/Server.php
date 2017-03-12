@@ -104,7 +104,8 @@ class Server
                         $node = $this->branches->get($path);
 
                         if ($node instanceof PostInterface) {
-                            $this->site->getTheme()->clearTwigClassCache();
+                            $this->site->loadConfig();
+                            $this->site->getTheme()->reloadTheme();
                             $data = $this->site->renderPost($node);
                         }
 

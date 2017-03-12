@@ -68,13 +68,19 @@ class Site
         $this->theme = new Theme($this->joinPaths($this->settings->getFullTheme()), $env);
         $this->branches = new Branches($this->joinPaths($this->settings->getContentDirectory()));
         $this->branches->useExtension(new PropertiesExtension());
+        $this->loadConfig();
+    }
+
+    public function loadConfig()
+    {
         $this->config = new Configuration();
-        $this->config->processDirectory($this->joinPaths(Settings::CONFIG_LOCATION), $env);
+        $this->config->processDirectory($this->joinPaths(Settings::CONFIG_LOCATION), $this->env);
     }
 
     public function build()
     {
-        $this->theme->clearTwigClassCache();
+        $this->loadConfig();
+        $this->theme->reloadTheme();
         $this->clearBuild();
         /** @var PostInterface $root */
         $root = $this->branches->get();
