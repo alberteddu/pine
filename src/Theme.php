@@ -46,10 +46,11 @@ class Theme
         $this->directory = $directory;
         $loader = new Twig_Loader_Filesystem(joinPaths($this->directory, self::LAYOUTS_DIRECTORY));
         $this->twig = new ReusableTwigEnvironment($loader, [
+            'strict_variables' => true,
             'auto_reload' => true,
             'cache' => false,
         ]);
-        $this->twig->addFunction(new Twig_Function('asset', function($url) {
+        $this->twig->addFunction(new Twig_Function('asset', function ($url) {
             if (substr($url, 0, 1) === '/') {
                 $url = substr($url, 1);
             }

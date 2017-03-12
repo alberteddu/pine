@@ -26,6 +26,15 @@ class WatchCommand extends Command
             ->addOption('env', null, InputOption::VALUE_REQUIRED, 'Environment', 'dev');
     }
 
+    private function build(Site $site, OutputInterface $output) {
+        try {
+            $site->build();
+            $output->writeln('<info>Site rebuilt.</info>');
+        } catch (\Exception $e) {
+            $this->getApplication()->renderException($e, $output);
+        }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $env = $input->getOption('env') === Site::ENV_PROD ? Site::ENV_PROD : Site::ENV_DEV;
@@ -34,14 +43,12 @@ class WatchCommand extends Command
         $files = new Filesystem;
         $tracker = new Tracker;
         $watcher = new Watcher($tracker, $files);
-        $handler = function (Event $event, $resource, $filePath) use ($site, $env, $output) {
-            $output->writeln(sprintf('Detected change at %s', $filePath));
+        $app = $this->getApplication();
 
-            try {
-                $site->build();
-            } catch (\Exception $e) {
-                $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
-            }
+        $handler = function (Event $event, $resource, $filePath) use ($app, $site, $env, $output) {
+            $output->writeln(sprintf('<comment>Detected change at %s</comment>', $filePath));
+
+            $this->build($site, $output);
         };
 
         $paths = [
@@ -58,9 +65,9 @@ class WatchCommand extends Command
             $listener->anything($handler);
         }
 
-        $output->writeln('Watcher started');
+        $output->writeln('<comment>Watcher started</comment>');
 
-        $site->build();
+        $this->build($site, $output);
 
         $watcher->start();
     }
