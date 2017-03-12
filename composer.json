@@ -17,6 +17,7 @@
         "jms/serializer": "^1.4",
         "twig/twig": "~2.0",
         "jasonlewis/resource-watcher": "1.2.*",
-        "react/react": "^0.4.2"
+        "react/react": "^0.4.2",
+        "filp/whoops": "^2.1"
     }
 }

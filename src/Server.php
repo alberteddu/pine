@@ -7,12 +7,15 @@ use Branches\Node\FileInterface;
 use Branches\Node\MimeType;
 use Branches\Node\NodeNotFoundException;
 use Branches\Node\PostInterface;
+use Exception;
 use React\EventLoop\Factory;
 use React\EventLoop\StreamSelectLoop;
 use React\Http\Request;
 use React\Http\Response;
 use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 class Server
 {
@@ -70,44 +73,59 @@ class Server
 
     private function addHandlers()
     {
-        $this->server->on('request', function (Request $request, Response $response) {
-            $path = $request->getPath();
-            $staticFileFound = false;
-            $contentType = 'text/html';
-            $data = '';
+        $handler = new PrettyPageHandler;
+        $handler->handleUnconditionally(true);
 
-            if (strpos($path, '/theme/') === 0) {
-                $withoutTheme = substr($path, 7);
-                $staticFilePath = $this->site->getTheme()->getStaticFilePath($withoutTheme);
+        $whoops = new Run;
+        $whoops->allowQuit(false);
+        $whoops->writeToOutput(false);
+        $whoops->pushHandler($handler);
 
-                if (is_readable($staticFilePath) && is_file($staticFilePath)) {
-                    $staticFileFound = true;
-                    $contentType = MimeType::getMimeTypeForPath($staticFilePath);
-                    $data = file_get_contents($staticFilePath);
-                }
-            }
+        $this->server->on('request', function (Request $request, Response $response) use ($whoops) {
+            try {
+                $path = $request->getPath();
+                $staticFileFound = false;
+                $contentType = 'text/html';
+                $data = '';
 
-            if (!$staticFileFound) {
-                try {
-                    $node = $this->branches->get($path);
+                if (strpos($path, '/theme/') === 0) {
+                    $withoutTheme = substr($path, 7);
+                    $staticFilePath = $this->site->getTheme()->getStaticFilePath($withoutTheme);
 
-                    if ($node instanceof PostInterface) {
-                        $this->site->getTheme()->clearTwigClassCache();
-                        $data = $this->site->renderPost($node);
+                    if (is_readable($staticFilePath) && is_file($staticFilePath)) {
+                        $staticFileFound = true;
+                        $contentType = MimeType::getMimeTypeForPath($staticFilePath);
+                        $data = file_get_contents($staticFilePath);
                     }
-
-                    if ($node instanceof FileInterface) {
-                        $data = file_get_contents($node->getPath());
-                        $contentType = MimeType::getMimeTypeForPath($node->getPath());
-                    }
-                } catch (NodeNotFoundException $e) {
-                    $response->writeHead(404, ['Content-Type' => 'text/html']);
-                    $response->end('Not found');
                 }
-            }
 
-            $response->writeHead(200, ['Content-Type' => $contentType]);
-            $response->end($data);
+                if (!$staticFileFound) {
+                    try {
+                        $node = $this->branches->get($path);
+
+                        if ($node instanceof PostInterface) {
+                            $this->site->getTheme()->clearTwigClassCache();
+                            $data = $this->site->renderPost($node);
+                        }
+
+                        if ($node instanceof FileInterface) {
+                            $data = file_get_contents($node->getPath());
+                            $contentType = MimeType::getMimeTypeForPath($node->getPath());
+                        }
+                    } catch (NodeNotFoundException $e) {
+                        $response->writeHead(404, ['Content-Type' => 'text/html']);
+                        $response->end('Not found');
+                    }
+                }
+
+                $response->writeHead(200, ['Content-Type' => $contentType]);
+                $response->end($data);
+            } catch (Exception $e) {
+                $html = $whoops->handleException($e);
+
+                $response->writeHead($e->getCode(), ['Content-Type' => 'text/html']);
+                $response->end($html);
+            }
         });
     }
 
