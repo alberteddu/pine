@@ -40,5 +40,11 @@
         "sha1": "468bc5b29329c84464d79578e85ba1d5ca6fb775",
         "url": "http://alberteddu.github.io/pine/downloads/pine-0.0.9.phar",
         "version": "0.0.9"
+    },
+    {
+        "name": "pine.phar",
+        "sha1": "b61a74527f9fcc41ebb43693bae473dbde1e2032",
+        "url": "http://alberteddu.github.io/pine/downloads/pine-0.0.10.phar",
+        "version": "0.0.10"
     }
 ]
