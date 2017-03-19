@@ -160,7 +160,7 @@ class Site
         /** @var PostInterface $root */
         $root = $this->branches->get();
         $this->buildPost($root);
-        $publicSource = $this->joinPaths($this->theme->getDirectory(), Theme::PUBLIC_DIRECTORY);
+        $publicSource = joinPaths($this->theme->getDirectory(), Theme::PUBLIC_DIRECTORY);
         $publicDestination = $this->getPathInBuild('theme');
         xcopy($publicSource, $publicDestination);
     }
