@@ -68,6 +68,7 @@ class Site
      */
     public function __construct($directory, $env = self::ENV_DEV)
     {
+        $this->plugins = [];
         $this->path = Path::normalizePath($directory);
 
         if (!$this->path) {
@@ -113,6 +114,10 @@ class Site
         }
 
         foreach ($this->settings->getPlugins() as $className) {
+            if (!class_exists($className)) {
+                continue;
+            }
+
             $pluginInstance = new $className;
 
             if (!$pluginInstance instanceof PluginInterface) {
