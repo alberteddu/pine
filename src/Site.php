@@ -8,6 +8,8 @@ use Branches\Node\FileInterface;
 use Branches\Node\PostInterface;
 use Exception;
 use Pine\Configuration\Configuration;
+use Pine\Plugin\PluginInterface;
+use Pine\Plugin\ThemeLocation;
 use Pine\Util\Path;
 use Pine\Configuration\Settings;
 use RecursiveDirectoryIterator;
@@ -39,6 +41,11 @@ class Site
     private $settings;
 
     /**
+     * @var ThemeLocation[]
+     */
+    private $availableThemes;
+
+    /**
      * @var Theme
      */
     private $theme;
@@ -47,6 +54,11 @@ class Site
      * @var Branches
      */
     private $branches;
+
+    /**
+     * @var PluginInterface[]
+     */
+    private $plugins;
 
     /**
      * @param string $directory
@@ -64,17 +76,75 @@ class Site
 
         $configurationPath = $this->joinPaths(Settings::FILENAME);
         $this->settings = Settings::createFromFileOrDefaults($configurationPath);
-        $this->validate();
-        $this->theme = new Theme($this->joinPaths($this->settings->getFullTheme()), $env);
         $this->branches = new Branches($this->joinPaths($this->settings->getContentDirectory()));
         $this->branches->useExtension(new PropertiesExtension());
+
         $this->loadConfig();
+        $this->loadPLugins();
+        $this->loadThemes();
+
+        $themeName = $this->settings->getTheme();
+
+        if (!isset($this->availableThemes[$themeName])) {
+            throw new Exception(sprintf('Theme %s not found', $themeName));
+        }
+
+        $this->theme = Theme::createFromThemeLocation($this->availableThemes[$themeName]);
+
+        $this->validate();
+
+        foreach ($this->plugins as $plugin) {
+            $plugin->ready();
+        }
     }
 
     public function loadConfig()
     {
         $this->config = new Configuration();
         $this->config->processDirectory($this->joinPaths(Settings::CONFIG_LOCATION), $this->env);
+    }
+
+    private function loadPlugins()
+    {
+        $autoloadPath = $this->joinPaths('vendor/autoload.php');
+
+        if (is_readable($autoloadPath)) {
+            require_once $autoloadPath;
+        }
+
+        foreach ($this->settings->getPlugins() as $className) {
+            $pluginInstance = new $className;
+
+            if (!$pluginInstance instanceof PluginInterface) {
+                continue;
+            }
+
+            $this->plugins[] = $pluginInstance;
+            $pluginInstance->setUp($this);
+
+            foreach ($pluginInstance->getBranchesExtensions() as $branchesExtension) {
+                $this->branches->useExtension($branchesExtension);
+            }
+        }
+    }
+
+    private function loadThemes()
+    {
+        foreach (glob($this->joinPaths(Settings::THEMES_LOCATION, '*')) as $path) {
+            if (!is_dir($path) || !is_readable($path)) {
+                continue;
+            }
+
+            $themeName = basename($path);
+
+            $this->availableThemes[$themeName] = ThemeLocation::create($themeName, $path);
+        }
+
+        foreach ($this->plugins as $plugin) {
+            foreach ($plugin->getThemeLocations() as $themeLocation) {
+                $this->availableThemes[$themeLocation->getName()] = $themeLocation;
+            }
+        }
     }
 
     public function build()
@@ -85,7 +155,7 @@ class Site
         /** @var PostInterface $root */
         $root = $this->branches->get();
         $this->buildPost($root);
-        $publicSource = $this->joinPaths($this->settings->getFullTheme(), Theme::PUBLIC_DIRECTORY);
+        $publicSource = $this->joinPaths($this->theme->getDirectory(), Theme::PUBLIC_DIRECTORY);
         $publicDestination = $this->getPathInBuild('theme');
         xcopy($publicSource, $publicDestination);
     }
@@ -187,7 +257,7 @@ class Site
             throw new Exception('Cannot write to build directory');
         }
 
-        if (!is_readable($this->joinPaths($this->settings->getFullTheme()))) {
+        if (!is_readable($this->theme->getDirectory())) {
             throw new Exception('Cannot read from theme directory');
         }
 

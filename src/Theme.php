@@ -3,8 +3,8 @@
 namespace Pine;
 
 use Pine\Configuration\Configuration;
+use Pine\Plugin\ThemeLocation;
 use Pine\Twig\ReusableTwigEnvironment;
-use Twig_Environment;
 use Twig_Function;
 use Twig_Loader_Filesystem;
 
@@ -60,6 +60,17 @@ class Theme
         $this->loadConfig();
     }
 
+    /**
+     * @param ThemeLocation $themeLocation
+     * @param string        $env
+     *
+     * @return Theme
+     */
+    public static function createFromThemeLocation(ThemeLocation $themeLocation, $env = Site::ENV_DEV)
+    {
+        return new self($themeLocation->getPath());
+    }
+
     private function loadConfig()
     {
         $this->config = new Configuration();
@@ -102,5 +113,13 @@ class Theme
     public function getStaticFilePath($path)
     {
         return joinPaths($this->directory, self::PUBLIC_DIRECTORY, $path);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirectory()
+    {
+        return $this->directory;
     }
 }

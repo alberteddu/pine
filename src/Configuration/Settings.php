@@ -41,6 +41,14 @@ class Settings
     private $build;
 
     /**
+     * @var string[]
+     *
+     * @Serializer\Type(name="array")
+     * @Serializer\SerializedName(value="plugins")
+     */
+    private $plugins;
+
+    /**
      * @param string $path
      *
      * @return Settings
@@ -87,6 +95,7 @@ class Settings
             'content' => 'content',
             'theme' => 'pine',
             'build' => 'build',
+            'plugins' => [],
         ];
     }
 
@@ -129,14 +138,6 @@ class Settings
     }
 
     /**
-     * @return string
-     */
-    public function getFullTheme()
-    {
-        return joinPaths(self::THEMES_LOCATION, $this->theme);
-    }
-
-    /**
      * @param string $theme
      *
      * @return Settings
@@ -164,6 +165,26 @@ class Settings
     public function setBuild($build)
     {
         $this->build = $build;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPlugins()
+    {
+        return $this->plugins;
+    }
+
+    /**
+     * @param string[] $plugins
+     *
+     * @return Settings
+     */
+    public function setPlugins($plugins)
+    {
+        $this->plugins = $plugins;
 
         return $this;
     }
