@@ -70,6 +70,7 @@ class Site
     {
         $this->plugins = [];
         $this->path = Path::normalizePath($directory);
+        $this->env = $env;
 
         if (!$this->path) {
             throw new Exception(sprintf('Directory "%s" does not exist', $directory));

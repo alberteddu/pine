@@ -83,7 +83,7 @@ class Server
 
         $this->server->on('request', function (Request $request, Response $response) use ($whoops) {
             try {
-                $path = $request->getPath();
+                $path = urldecode($request->getPath());
                 $staticFileFound = false;
                 $contentType = 'text/html';
                 $data = '';
@@ -124,7 +124,12 @@ class Server
             } catch (Exception $e) {
                 $html = $whoops->handleException($e);
 
-                $response->writeHead($e->getCode(), ['Content-Type' => 'text/html']);
+                try {
+                    $response->writeHead($e->getCode(), ['Content-Type' => 'text/html']);
+                } catch (Exception $e) {
+                    // Head was already written.
+                }
+
                 $response->end($html);
             }
         });
