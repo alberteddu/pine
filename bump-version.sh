@@ -21,8 +21,11 @@ box build
 #
 git checkout gh-pages
 
+rm -f downloads/pine-latest.phar
 cp pine.phar downloads/pine-${TAG}.phar
+cp pine.phar downloads/pine-latest.phar
 git add downloads/pine-${TAG}.phar
+git add downloads/pine-latest.phar
 
 SHA1=$(openssl sha1 pine.phar | sed 's/^.* //')
 

@@ -116,6 +116,8 @@ class Server
                     } catch (NodeNotFoundException $e) {
                         $response->writeHead(404, ['Content-Type' => 'text/html']);
                         $response->end('Not found');
+
+                        return;
                     }
                 }
 
