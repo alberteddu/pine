@@ -3,10 +3,10 @@
 namespace Pine;
 
 use Pine\Command\BuildCommand;
-use Pine\Command\CreateCommand;
 use Pine\Command\ServeCommand;
-use Pine\Command\UpdateCommand;
 use Pine\Command\WatchCommand;
+use Deployer\Component\PharUpdate\Console\Command;
+use Deployer\Component\PharUpdate\Console\Helper;
 use Symfony\Component\Console\Application;
 
 class PineApplication extends Application
@@ -21,9 +21,13 @@ class PineApplication extends Application
     {
         parent::__construct($name, $version);
 
-        $this->add(new UpdateCommand());
         $this->add(new BuildCommand());
         $this->add(new WatchCommand());
         $this->add(new ServeCommand());
+
+        $command = new Command('update');
+        $command->setManifestUri('https://alberteddu.github.io/pine/manifest.json');
+        $this->getHelperSet()->set(new Helper());
+        $this->add($command);
     }
 }
