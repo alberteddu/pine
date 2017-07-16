@@ -1,0 +1,43 @@
+{% verbatim %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ page.title|default(site.config.name|default('Pine')) }}</title>
+
+    <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
+</head>
+<body>
+<div id="header">
+    {% if post.isPropertySet('title') %}
+        <h1>
+            {{ post.title }}
+        </h1>
+    {% endif %}
+
+    <ul class="menu">
+        {% set root = site.branches.get() %}
+
+        <li {% if post.isRoot %}class="current"{% endif %}>
+            <a href="{{ root.url }}">
+                Home
+            </a>
+        </li>
+
+        {% for child in root.children.where('type', 'page') %}
+            <li {% if child.is(post) %}class="current"{% endif %}>
+                <a href="{{ child.url }}">{{ child.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="content">
+    {{ post.__content|raw }}
+</div>
+
+</body>
+</html>
+{% endverbatim %}

@@ -1,0 +1,40 @@
+{
+    "templates": "./templates",
+
+    "variables": {
+        "name": "placeholder"
+    },
+
+    "output": [
+        {
+            "type": "file",
+            "path": "pine.yml",
+            "template": "pine.yml.twig"
+        },
+        {
+            "type": "file",
+            "path": "config/site.yml",
+            "template": "config.yml.twig"
+        },
+        {
+            "type": "file",
+            "path": "themes/default/config/theme.yml",
+            "template": "config.yml.twig"
+        },
+        {
+            "type": "file",
+            "path": "content/home.md",
+            "template": "home.md.twig"
+        },
+        {
+            "type": "file",
+            "path": "themes/default/public/css/style.css",
+            "template": "style.css.twig"
+        },
+        {
+            "type": "file",
+            "path": "themes/default/templates/default.html.twig",
+            "template": "default.html.twig"
+        }
+    ]
+}

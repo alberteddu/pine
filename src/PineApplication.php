@@ -3,6 +3,7 @@
 namespace Pine;
 
 use Pine\Command\BuildCommand;
+use Pine\Command\NewCommand;
 use Pine\Command\ServeCommand;
 use Pine\Command\WatchCommand;
 use Deployer\Component\PharUpdate\Console\Command;
@@ -24,6 +25,7 @@ class PineApplication extends Application
         $this->add(new BuildCommand());
         $this->add(new WatchCommand());
         $this->add(new ServeCommand());
+        $this->add(new NewCommand());
 
         $command = new Command('update');
         $command->setManifestUri('https://alberteddu.github.io/pine/manifest.json');

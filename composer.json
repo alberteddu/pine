@@ -12,6 +12,7 @@
     },
     "require": {
         "branches/branches": "dev-master",
+        "alberteddu/octopus": "0.0.*",
         "symfony/console": "^3.2",
         "jms/serializer": "^1.4",
         "twig/twig": "~2.0",

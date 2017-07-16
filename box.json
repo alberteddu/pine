@@ -2,10 +2,12 @@
     "chmod": "0755",
     "directories": [
         "src",
-        "lib"
+        "lib",
+        "templates"
     ],
     "files": [
-        "LICENSE"
+        "LICENSE",
+        "config/new-site.octopus.json"
     ],
     "finder": [
         {
