@@ -35,8 +35,10 @@ class ServeCommand extends Command
         $port = $input->getOption('port');
         $output->writeln(sprintf('<info>Running pine server at http://%s:%s</info>', $host, $port));
         $output->writeln('Press Ctrl-C to quit.');
+        $output->writeln('');
 
         $server = new Server($site, $host, $port);
+        $server->setOutput($output);
         $server->run();
     }
 }

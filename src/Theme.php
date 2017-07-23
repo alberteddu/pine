@@ -2,6 +2,7 @@
 
 namespace Pine;
 
+use function PHPSTORM_META\type;
 use Pine\Configuration\Configuration;
 use Pine\Plugin\ThemeLocation;
 use Pine\Twig\ReusableTwigEnvironment;
@@ -50,6 +51,7 @@ class Theme
             'auto_reload' => true,
             'cache' => false,
         ]);
+
         $this->twig->addFunction(new Twig_Function('asset', function ($url) {
             if (substr($url, 0, 1) === '/') {
                 $url = substr($url, 1);
@@ -57,6 +59,23 @@ class Theme
 
             return sprintf('/theme/%s', $url);
         }));
+
+        $this->twig->addFunction(new Twig_Function('get', function ($context, $url) {
+            if (!isset($context['site'])) {
+                return '';
+            }
+
+            $site = $context['site'];
+
+            if (!$site instanceof Site) {
+                return '';
+            }
+
+            return $site->getBranches()->get($url);
+        }, [
+            'needs_context' => true
+        ]));
+
         $this->loadConfig();
     }
 

@@ -14,6 +14,7 @@ use React\Http\Request;
 use React\Http\Response;
 use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
+use Symfony\Component\Console\Output\OutputInterface;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -57,6 +58,11 @@ class Server
      */
     private $server;
 
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
     public function __construct(Site $site, $host = self::DEFAULT_HOST, $port = self::DEFAULT_PORT)
     {
         $this->site = $site;
@@ -71,6 +77,27 @@ class Server
         $this->addHandlers();
     }
 
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
+    private function message(string $message)
+    {
+        if (null === $this->output) {
+            return;
+        }
+
+        $this->output->writeln($message);
+    }
+
+    private function requestLine(Request $request)
+    {
+        $message = sprintf('<info>%s %s</info>', $request->getMethod(), $request->getPath());
+
+        $this->message($message);
+    }
+
     private function addHandlers()
     {
         $handler = new PrettyPageHandler;
@@ -82,6 +109,8 @@ class Server
         $whoops->pushHandler($handler);
 
         $this->server->on('request', function (Request $request, Response $response) use ($whoops) {
+            $this->requestLine($request);
+
             try {
                 $path = urldecode($request->getPath());
                 $staticFileFound = false;
