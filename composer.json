@@ -20,5 +20,6 @@
         "react/react": "^0.4.2",
         "filp/whoops": "^2.1",
         "deployer/phar-update": "^2.0"
-    }
+    },
+    "bin": ["bin/pine"]
 }
